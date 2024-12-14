@@ -1,25 +1,45 @@
-import mongoose from "mongoose";
+// models/User.js
+import mongoose from 'mongoose';
 
-const UserSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    trim: true
   },
   email: {
     type: String,
     required: true,
     unique: true,
-  },
-  number: {
-    type: Number,
-    required: true,
-    unique: true,
+    lowercase: true,
+    trim: true
   },
   password: {
     type: String,
-    required: true,
+    required: true
   },
-});
+  role: {
+    type: String,
+    enum: ['user', 'admin', 'moderator'],
+    default: 'user'
+  },
+  refreshTokens: [{
+    token: {
+      type: String,
+      required: true
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      expires: 30 * 24 * 60 * 60 // 30 days
+    }
+  }],
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  resetPasswordToken: String,
+  resetPasswordExpires: Date
+}, { timestamps: true });
 
-const userModel = mongoose.model("User", UserSchema);
-export default userModel;
+export default mongoose.model('User', userSchema);
